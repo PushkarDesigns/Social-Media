@@ -1,50 +1,33 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 // post model 
 const postSchema = new mongoose.Schema(
   {
-    username: {
+    caption: {
       type: String,
-      require: true,
-      unique: true,
+      default: ""
     },
-    email: {
+    image: {
       type: String,
-      require: true,
-      unique: true,
+      require:true
     },
-    password: {
-      type: String,
-      require: true,
-    },
-    uploadImage: {
-      type: String,
-      default: "",
-    },
-    about: {
-      type: String,
-      default: "",
-    },
-    gender: {
-      type: String,
-      enum: ["male", "female", "Rather not say"],
-    },
-    followers: [
+    author: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        require:true
+      },
+    ],
+    likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-    following: [
+    comments: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    posts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",
+        ref: "Comment",
       },
     ],
     bookmarks: [
@@ -53,7 +36,7 @@ const postSchema = new mongoose.Schema(
         ref: "Post",
       },
     ],
-  },{ timestamps: true }
+  },
 );
 
-export const User = mongoose.model("User", userSchema);
+export const Post = mongoose.model("Post", postSchema);
