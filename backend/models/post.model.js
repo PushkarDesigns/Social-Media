@@ -1,7 +1,7 @@
 import mongoose, { mongo } from "mongoose";
 
-// user model 
-const userSchema = new mongoose.Schema(
+// post model 
+const postSchema = new mongoose.Schema(
   {
     username: {
       type: String,
