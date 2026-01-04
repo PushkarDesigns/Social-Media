@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// post model 
+// user model 
 const userSchema = new mongoose.Schema(
   {
     username: {
