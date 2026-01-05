@@ -89,6 +89,29 @@ export const login = async (req, res) => {
   }
 };
 
+/**
+ * Express controller function to get a user profile by ID.
+ * Expects the user ID in the request parameters (e.g., /profile/:id).
+ */
+export const getProfile = async (req, res) => {
+  try {
+    // Extract the user ID from the request parameters
+    const userId = req.params.id;
+
+    // Find the user in the database by their ID
+    let user = await User.findById(userId);
+
+    // Return a success response with the user data
+    return res.status(200).json({
+      user, // shorthand for user: user
+      success: true,
+    });
+  } catch (error) {
+    // Log any errors that occur during the process
+    console.log(error);
+  }
+};
+
 export const logout = async (_, res) => {
   try {
     return res.cookie("token", "", { maxAge: 0 }).json({
