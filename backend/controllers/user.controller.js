@@ -45,7 +45,7 @@ export const login = async (req, res) => {
         success: false,
       });
     }
-    let user = await user.findOne({email});
+    let user = await user.findOne({ email });
     if (!user) {
       return res.status(401).json({
         message: "Incorrect email or password",
@@ -61,23 +61,41 @@ export const login = async (req, res) => {
     }
 
     user = {
-      _id:user._id,
-      email:user.email,
-      uploadImage:user.uploadImage,
-      bio:user.bio,
-      followers:user.followers,
-      following:user.following,
-      post:user.posts
-    }
+      _id: user._id,
+      email: user.email,
+      uploadImage: user.uploadImage,
+      bio: user.bio,
+      followers: user.followers,
+      following: user.following,
+      post: user.posts,
+    };
 
-    const token = await jwt.sign({userId:user._id},process.env.SECRET_KEY,{expriesIn:'10d'});
-    return res.cookie('token', token, {httpOnly:true, samesite:'strict', maxAge: 10*24*60*60*1000}).json({
+    const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
+      expriesIn: "10d",
+    });
+    return res
+      .cookie("token", token, {
+        httpOnly: true,
+        samesite: "strict",
+        maxAge: 10 * 24 * 60 * 60 * 1000,
+      })
+      .json({
         message: `Welcome back ${user.username}`,
-        success:true,
-        user
-    })
+        success: true,
+        user,
+      });
   } catch (error) {
     console.log(error);
   }
 };
 
+export const logout = async (_, res) => {
+  try {
+    return res.cookie("token", "", { maxAge: 0 }).json({
+      message: "Logged out successfully.",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
