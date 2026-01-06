@@ -23,3 +23,10 @@ const getDatauri = (file) => {
 
 // Export the function for use in other modules.
 export default getDatauri;
+
+// feat: Add utility function to generate data URI from file buffer
+
+// This commit introduces a new utility function `getDataUri` in `utils/getDataUri.js`.
+// It utilizes the `datauri/parser.js` and `path` modules to take a file object (specifically its original name and buffer) and convert it into a base64-encoded data URI string. 
+
+// This function is necessary to allow for the embedding of file data directly within application responses, which is particularly useful for handling image uploads without needing immediate file storage.
