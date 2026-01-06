@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDatauri from "../utils/dataUri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 // user register / singhup
 export const register = async (req, res) => {
@@ -121,10 +122,7 @@ export const editProfile = async (req, res) => {
     // (likely set by a prior authentication middleware).
     const userId = req.id;
     // Extract 'bio' and 'gender' text fields from the request body.
-    const {
-      bio,
-      gender
-    } = req.body;
+    const { bio, gender } = req.body;
     // Extract the uploaded 'uploadImage' file object from 'req.file'
     // (this is typically populated by middleware like Multer).
     const uploadImage = req.file;
@@ -137,18 +135,48 @@ export const editProfile = async (req, res) => {
       // If a file exists, use a utility function (getDataUri) to convert the file buffer
       // into a Data URI string, which can be easily used for uploads or embedding.
       const fileUri = getDatauri(uploadImage);
+      cloudResponse = await cloudinary.uploader.upload(fileUri);
 
       // Subsequent code would likely involve using the fileUri to upload the image
       // to cloud storage and then updating the user's profile information in a database.
     }
 
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found.",
+        success: false,
+      });
+    }
+    // Check if the 'bio' field was provided and update the user object if so.
+    if (bio) user.bio = bio;
+
+    // Check if the 'gender' field was provided and update the user object if so.
+    if (gender) user.gender = gender;
+
+    // Check if a 'uploadImage' was processed and update the user's profile picture
+    // URL using the secure URL returned from the cloud service response.
+    if (uploadImage) user.uploadImage = cloudResponse.secure_url;
+
+    await user.save();
+
+    // This snippet shows how to send a successful HTTP response (Status 200 OK)
+    // after a profile update operation is complete.
+
+    return res.status(200).json({
+      // A success message for the client.
+      message: "Profile updated.",
+      // A boolean flag indicating success.
+      success: true,
+      // The updated user object, which is sent back as part of the JSON response.
+      user,
+    });
   } catch (error) {
     // Catch any errors that occur during the process and log them to the console.
     console.log(error);
     // In a full application, you would also send an error response to the client here (e.g., res.status(500).send('Error')).
   }
 };
-
 
 export const logout = async (_, res) => {
   try {
@@ -157,6 +185,97 @@ export const logout = async (_, res) => {
       success: true,
     });
   } catch (error) {
+    console.log(error);
+  }
+};
+
+// Function to fetch a list of users, excluding the current user themselves.
+export const getSuggestedUsers = async (req, res) => {
+  try {
+    // Find all users in the database where the '_id' does not equal the current request user's ID,
+    // and specifically exclude the 'password' field from the results.
+    const suggestedUsers = await User.find({ _id: { $ne: req.id } }).select(
+      "-password"
+    );
+
+    // If no users are found (e.g., only the current user exists in the DB).
+    if (!suggestedUsers)
+      return res.status(404).json({
+        message: "Currently do not have any users", // Return a 404 Not Found status.
+      });
+
+    // If users are found, return them with a 200 OK status.
+    return res.status(200).json({
+      success: true,
+      users: suggestedUsers,
+    });
+  } catch (error) {
+    // Log any server errors to the console.
+    console.log(error);
+  }
+};
+
+// Function stub for handling follow/unfollow logic.
+export const followOrUnfollow = async (req, res) => {
+  try {
+    // Identify the ID of the user initiating the action (the follower).
+    const followKrneWala = req.id; // "one who will follow"
+    // Identify the ID of the target user being followed/unfollowed.
+    const jiskoFollowKrunga = req.params.id; // "one who I will follow"
+    // Check if the user is trying to follow/unfollow themselves.
+    if (followKrneWala === jiskoFollowKrunga) {
+      return res.status(400).json({
+        message: "You cannot follow/unfollow yourself.",
+        success: false,
+      });
+    }
+
+    // Find both the current user and the target user in the database.
+    const user = await User.findById(followKrneWala);
+    const targetUser = await User.findById(jiskoFollowKrunga);
+
+    // Check if either user was not found.
+    if (!user || !targetUser) {
+      return res.status(404).json({
+        message: "User not found.",
+        success: false,
+      });
+    }
+
+    // Check if the current user is already following the target user.
+    const isFollowing = user.following.includes(jiskoFollowKrunga);
+
+    if (isFollowing) {
+      // Unfollow logic:
+      // In a real application, you would remove the target user from the current
+      // user's 'following' array and remove the current user from the target user's 'followers' array.
+      // e.g., await User.updateOne({ _id: followKrneWala }, { $pull: { following: jiskoFollowKrunga } });
+      // e.g., await User.updateOne({ _id: jiskoFollowKrunga }, { $pull: { followers: followKrneWala } });
+      await User.updateOne({ _id: followKrneWala }, { $pull: { following: jiskoFollowKrunga } });
+      await User.updateOne({ _id: jiskoFollowKrunga }, { $pull: { followers: followKrneWala } });
+      return res.status(200).json({message:'Unfollow successfully', success:true});
+    } else {
+      // Follow logic:
+      // Use Promise.all to ensure both database updates happen concurrently and efficiently.
+      await Promise.all([
+        // Add the target user to the current user's 'following' array.
+        User.updateOne(
+          { _id: followKrneWala },
+          { $push: { following: jiskoFollowKrunga } }
+        ),
+        // Add the current user to the target user's 'followers' array.
+        User.updateOne(
+          { _id: jiskoFollowKrunga },
+          { $push: { followers: followKrneWala } }
+        ),
+      ]);
+      return res.status(200).json({message:'followed successfully', success:true});
+    }
+
+    // In a real application, you would send a success response here after the logic is complete.
+    // e.g., return res.status(200).json({ message: 'Operation successful.', success: true });
+  } catch (error) {
+    // Log any server errors to the console.
     console.log(error);
   }
 };
