@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import getDatauri from "../utils/dataUri.js";
 
 // user register / singhup
 export const register = async (req, res) => {
@@ -111,6 +112,43 @@ export const getProfile = async (req, res) => {
     console.log(error);
   }
 };
+
+// Export a controller function named 'editProfile'. It is an asynchronous function
+// that handles an HTTP request (req) and response (res) typically in an Express.js environment.
+export const editProfile = async (req, res) => {
+  try {
+    // Extract the 'userId' from the request object's custom 'id' property
+    // (likely set by a prior authentication middleware).
+    const userId = req.id;
+    // Extract 'bio' and 'gender' text fields from the request body.
+    const {
+      bio,
+      gender
+    } = req.body;
+    // Extract the uploaded 'uploadImage' file object from 'req.file'
+    // (this is typically populated by middleware like Multer).
+    const uploadImage = req.file;
+
+    // Declare a variable to store the response from a cloud service (e.g., Cloudinary, AWS S3).
+    let cloudResponse;
+
+    // Check if a upload Image was actually uploaded.
+    if (profilePicture) {
+      // If a file exists, use a utility function (getDataUri) to convert the file buffer
+      // into a Data URI string, which can be easily used for uploads or embedding.
+      const fileUri = getDatauri(uploadImage);
+
+      // Subsequent code would likely involve using the fileUri to upload the image
+      // to cloud storage and then updating the user's profile information in a database.
+    }
+
+  } catch (error) {
+    // Catch any errors that occur during the process and log them to the console.
+    console.log(error);
+    // In a full application, you would also send an error response to the client here (e.g., res.status(500).send('Error')).
+  }
+};
+
 
 export const logout = async (_, res) => {
   try {
