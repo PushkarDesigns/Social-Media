@@ -1,5 +1,5 @@
 // Import the 'v1' version of the Cloudinary SDK and alias it as 'cloudinary'.
-import {v1 as cloudinary} from "cloudinary";
+import {v2 as cloudinary} from "cloudinary";
 
 // Import the 'dotenv' library, which is used to load environment variables from a .env file.
 import dotenv from "dotenv";

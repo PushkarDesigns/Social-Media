@@ -1,4 +1,4 @@
-import { User } from "../models/user.model.js";
+import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDatauri from "../utils/dataUri.js";
@@ -9,7 +9,7 @@ export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body; // object destruction
     if (!username || !email || !password) {
-      return res.status(401).json({
+      return res.status(400).json({
         message: "Something is missing, Please check!",
         success: false,
       });
@@ -47,7 +47,7 @@ export const login = async (req, res) => {
         success: false,
       });
     }
-    let user = await user.findOne({ email });
+    let user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
         message: "Incorrect email or password",
@@ -64,6 +64,7 @@ export const login = async (req, res) => {
 
     user = {
       _id: user._id,
+      username: user.username,
       email: user.email,
       uploadImage: user.uploadImage,
       bio: user.bio,
@@ -73,12 +74,13 @@ export const login = async (req, res) => {
     };
 
     const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
-      expriesIn: "10d",
+      expiresIn: "10d",
     });
     return res
       .cookie("token", token, {
         httpOnly: true,
-        samesite: "strict",
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
         maxAge: 10 * 24 * 60 * 60 * 1000,
       })
       .json({
@@ -101,7 +103,7 @@ export const getProfile = async (req, res) => {
     const userId = req.params.id;
 
     // Find the user in the database by their ID
-    let user = await User.findById(userId);
+    let user = await User.findById(userId).select("-password");;
 
     // Return a success response with the user data
     return res.status(200).json({
@@ -131,11 +133,11 @@ export const editProfile = async (req, res) => {
     let cloudResponse;
 
     // Check if a upload Image was actually uploaded.
-    if (profilePicture) {
+    if (uploadImage) {
       // If a file exists, use a utility function (getDataUri) to convert the file buffer
       // into a Data URI string, which can be easily used for uploads or embedding.
       const fileUri = getDatauri(uploadImage);
-      cloudResponse = await cloudinary.uploader.upload(fileUri);
+      cloudResponse = await cloudinary.uploader.upload(fileUri.content);
 
       // Subsequent code would likely involve using the fileUri to upload the image
       // to cloud storage and then updating the user's profile information in a database.
@@ -199,9 +201,10 @@ export const getSuggestedUsers = async (req, res) => {
     );
 
     // If no users are found (e.g., only the current user exists in the DB).
-    if (!suggestedUsers)
+    if (!suggestedUsers.length === 0)
       return res.status(404).json({
         message: "Currently do not have any users", // Return a 404 Not Found status.
+        success: false,
       });
 
     // If users are found, return them with a 200 OK status.

@@ -13,7 +13,7 @@ import {
 } from "../controllers/user.controller.js";
 
 // Import a middleware function used for authenticating requests.
-import isAuthenticated from "../middlewares/isAuthenticated.js";
+import isAuthenticated from "../middlewares/isAuthentication.js";
 import upload from "../middlewares/multer.js";
 
 // Create a new router instance from express.

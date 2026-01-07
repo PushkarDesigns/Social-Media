@@ -1,9 +1,10 @@
-import express, { urlencoded } from 'express'
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
-import connectDB from './utils/db.js'
-import dotenv from 'dotenv'
-dotenv.config({})
+import express, { urlencoded } from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import connectDB from './utils/db.js';
+import userRoute from './routes/user.route.js';
+import dotenv from 'dotenv';
+dotenv.config({});
 
 const PORT = process.env.PORT || 8000
 
@@ -27,7 +28,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-
+// api
+app.use("/api/v1/user", userRoute);
+// "http://localhost:3000/api/v1/user/register"
 
 
 app.listen(PORT,() => {
