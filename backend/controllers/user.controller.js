@@ -143,7 +143,7 @@ export const editProfile = async (req, res) => {
       // to cloud storage and then updating the user's profile information in a database.
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("-password");
     if (!user) {
       return res.status(404).json({
         message: "User not found.",
