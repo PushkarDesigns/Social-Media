@@ -3,6 +3,7 @@ import express from "express";
 
 // Import controller functions for login, logout, and register from a specific file path.
 import {
+  getProfile,
   login,
   logout,
   register
@@ -26,4 +27,5 @@ router.route("/logout").get(logout);
 // Define a GET route for fetching a specific user's profile using a dynamic ID parameter.
 // This route is protected by the 'isAuthenticated' middleware, meaning a valid token/session
 // is required before the subsequent (unseen) profile controller logic runs.
-router.route("/:id/profile").get(isAuthenticated /* , profileControllerFunction */ );
+router.route("/:id/profile").get(isAuthenticated,getProfile /* , profileControllerFunction */ );
+router.route("/profile/edit").get(isAuthenticated, /* , profileControllerFunction */ );
