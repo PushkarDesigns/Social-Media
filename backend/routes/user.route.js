@@ -2,15 +2,7 @@
 import express from "express";
 
 // Import controller functions for login, logout, and register from a specific file path.
-import {
-  editProfile,
-  followOrUnfollow,
-  getProfile,
-  getSuggestedUsers,
-  login,
-  logout,
-  register
-} from "../controllers/user.controller.js";
+import { editProfile, followOrUnfollow, getProfile, getSuggestedUsers, login, logout, register } from "../controllers/user.controller.js";
 
 // Import a middleware function used for authenticating requests.
 import isAuthenticated from "../middlewares/isAuthentication.js";
