@@ -103,7 +103,7 @@ export const getProfile = async (req, res) => {
     const userId = req.params.id;
 
     // Find the user in the database by their ID
-    let user = await User.findById(userId).select("-password");;
+    let user = await User.findById(userId).select("-password");
 
     // Return a success response with the user data
     return res.status(200).json({
