@@ -26,6 +26,7 @@ const isAuthenticated = async (req, res, next) => {
     }
     req.id = decode.userId
     // If successful, proceed to the next middleware or route handler (implied 'next()' is missing in the image)
+    next(); //call after function isAuthenticated 
 
   } catch (error) {
     console.log(error);
