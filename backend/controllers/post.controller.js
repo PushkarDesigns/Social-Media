@@ -69,3 +69,232 @@ export const addNewPost = async (req, res) => {
     // You might also send an error response to the user here
   }
 };
+
+// Define and export an asynchronous function to fetch all posts
+export const getAllPost = async (req, res) => {
+  try {
+    // Find all documents in the 'Post' collection and sort them by 'createdAt' in descending order (-1 for newest first)
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      // Populate the 'author' field, replacing the ID with the user document, selecting only 'username' and 'uploadImage' fields
+      .populate({ path: "author", select: "username, uploadImage" })
+      // Populate the 'comments' array
+      .populate({
+        path: "comments",
+        // Sort comments by creation date within the array
+        sort: { createdAt: -1 },
+        // Nested population: for each comment, populate its 'author' field
+        populate: {
+          path: "author",
+          select: "username, uploadImage", // Select specific author fields
+        },
+      });
+
+    // Return a successful response with the retrieved posts and a success flag
+    return res.status(200).json({
+      posts,
+      success: true,
+    });
+  } catch (error) {
+    // Log any errors that occur during the database operation
+    console.log(error);
+  }
+};
+
+// Define and export an asynchronous function to handle fetching a user's posts
+export const getUserPost = async (req, res) => {
+  try {
+    // Extract the authorId from the request object (assuming 'req.id' holds the user ID)
+    const authorId = req.id;
+
+    // Use Mongoose to find posts authored by the specified authorId
+    const posts = await Post.find({ author: authorId })
+      // Sort the results in descending order by creation date (newest first)
+      .sort({ createdAt: -1 })
+      // Populate the 'author' field with data from the User collection
+      .populate({
+        path: "author",
+        select: "username, uploadImage", // Select only specific fields for the author
+      })
+      // Populate the 'comments' array within each post
+      .populate({
+        path: "comments",
+        sort: { createdAt: -1 }, // Sort comments by creation date (newest first)
+        populate: {
+          path: "author", // Populate the 'author' field within each comment
+          select: "username, uploadImage", // Select specific fields for the comment author
+        },
+      });
+
+    // If successful, return a 200 status code and the posts data as a JSON response
+    return res.status(200).json({
+      posts,
+      success: true,
+    });
+  } catch (error) {
+    // If an error occurs, log it to the console
+    console.log(error);
+  }
+};
+
+// Define and export an asynchronous function to handle liking a post
+export const likePost = async (req, res) => {
+  try {
+    // Extract the ID of the user performing the like operation from the request
+    const likeKrneWalaUserkiId = req.id;
+    // Extract the post ID from the request parameters
+    const postId = req.params.id;
+
+    // Find the post by its ID in the database
+    const post = await Post.findById(postId);
+
+    // Check if the post exists; if not, return a 404 Not Found error
+    if (!post)
+      return res
+        .status(404)
+        .json({ message: "Post not found", success: false });
+
+    // Like logic starter (comment from original code)
+    // Use Mongoose's updateOne with $addToSet to ensure the user ID is added to the likes array only once (prevents duplicate likes)
+    await Post.updateOne(
+      { _id: postId },
+      { $addToSet: { likes: likeKrneWalaUserkiId } }
+    );
+
+    // Save the updated post document to the database
+    await post.save();
+
+    // Implement socket io for real time notification (comment from original code)
+
+
+    // Return a response to the client
+    return (
+      res
+        // Set the HTTP status code to 200 (OK)
+        .status(200)
+        // Send a JSON response body containing a success message and flag
+        .json({
+          message: "Post Liked", // A descriptive message
+          success: true, // A boolean flag indicating success
+        })
+    );
+  } catch (error) {
+    // Catch and handle any errors that occur during the process
+    console.log(error);
+  }
+};
+// Define and export an asynchronous function to handle disliking (removing a like from) a post
+export const dislikePost = async (req, res) => {
+  try {
+    // Extract the ID of the user performing the dislike operation from the request
+    const likeKrneWalaUserkiId = req.id;
+    // Extract the post ID from the request parameters
+    const postId = req.params.id;
+
+    // Find the post by its ID in the database
+    const post = await Post.findById(postId);
+    
+    // Check if the post exists; if not, return a 404 Not Found error
+    if (!post) return res.status(404).json({ message: 'Post not found', success: false });
+
+    // Like logic started (comment from original code)
+    // Use Mongoose's updateOne with $pull to remove the user's ID from the 'likes' array
+    await post.updateOne({ $pull: { likes: likeKrneWalaUserkiId } });
+    
+    // Save the updated post document to the database
+    await post.save();
+
+    // Implement socket io for real time notification (comment from original code)
+
+
+    // If successful, return a 200 status code and a success message as a JSON response
+    return res.status(200).json({message: 'Post disliked', success:true});
+
+  } catch (error) {
+    // Catch and handle any errors that occur during the process
+    console.log(error);
+  }
+};
+// Define and export an asynchronous function to handle adding a comment to a post
+export const addComment = async (req, res) => {
+  try {
+    // Extract the post ID from the request parameters (assuming route is /posts/:id/comment)
+    const postId = req.params.id;
+    // Extract the ID of the user creating the comment from the request object (e.g., from a JWT payload)
+    const commentKrneWalaUserKiId = req.id;
+    // Extract the text content of the comment from the request body
+    const { text } = req.body;
+
+    // Optional: Validate input
+    if (!text) {
+      return res.status(400).json({ message: 'Comment text is required', success: false });
+    }
+
+    // Create a new Comment document in the database
+    const comment = await Comment.create({
+      text, // Assign the comment text
+      author: commentKrneWalaUserKiId, // Assign the author's ID
+      post: postId // Assign the associated post's ID
+    })
+    // Populate the 'author' field immediately after creation to return relevant user details in the response
+    .populate({
+      path: 'author',
+      select: 'username, uploadImage' // Select specific fields from the User model
+    });
+
+    // Find the associated post document
+    const post = await Post.findById(postId);
+    
+    // Check if the post exists
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found', success: false });
+    }
+
+    // Add the newly created comment's ID to the 'comments' array of the post document
+    post.comments.push(comment._id);
+    // Save the updated post document to persist the new comment reference in the post's comments array
+    await post.save();
+
+    // If successful, return a 201 status code (Created) and the newly created comment data as a JSON response
+    return res.status(201).json({
+      message: 'Comment Added',
+      comment,
+      success: true
+    });
+  } catch (error) {
+    // Catch and handle any errors that occur during the process
+    console.log(error);
+    // Return a generic 500 Internal Server Error response for unhandled errors
+    return res.status(500).json({ message: 'An internal server error occurred', success: false });
+  }
+};
+
+// Define and export an asynchronous function to fetch comments for a specific post
+export const getCommentsOfPost = async (req, res) => {
+  try {
+    // Extract the post ID from the request parameters (e.g., from a route like /api/posts/:id/comments)
+    const postId = req.params.id;
+
+    // Find all comments associated with the postId
+    const comments = await Comment.find({ post: postId })
+      // Populate the 'author' field to include specific user details
+      .populate('author', 'username uploadImage');
+
+    // Check if no comments were found
+    if (!comments || comments.length === 0) {
+      // If no comments exist, return a 404 Not Found error
+      return res.status(404).json({ message: 'No comments found for this post', success: false });
+    }
+
+    // If comments are found, return a 200 OK status with the list of comments
+    return res.status(200).json({ success: true, comments });
+
+  } catch (error) {
+    // Catch and handle any potential errors during the operation
+    console.log(error);
+    // Optional: Return a generic 500 Internal Server Error response to the client
+    // return res.status(500).json({ message: 'An internal server error occurred', success: false });
+  }
+};
+
+// deletePost is pending
