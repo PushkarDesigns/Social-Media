@@ -1,7 +1,7 @@
 // Import the core express library
 import express from "express";
 // Import a custom middleware function to ensure the user is authenticated
-import isAuthenticated from "../middlewares/isAuthenticated.js";
+import isAuthenticated from "../middlewares/isAuthentication.js";
 // Import a middleware (likely for file uploads, though unused in the routes below)
 import upload from "../middlewares/multer.js";
 // Import specific controller functions that handle the core logic for messages
