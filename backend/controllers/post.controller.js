@@ -3,6 +3,7 @@ import sharp from "sharp";
 import cloudinary from "../utils/cloudinary.js";
 import { Post } from "../models/post.model.js";
 import { User } from "../models/user.model.js";
+import Comment from "../models/comment.model.js";
 
 // Define an asynchronous function to handle a new post request (typical in)
 export const addNewPost = async (req, res) => {
@@ -227,9 +228,7 @@ export const addComment = async (req, res) => {
 
     // Optional: Validate input
     if (!text) {
-      return res
-        .status(400)
-        .json({ message: "Comment text is required", success: false });
+      return res.status(400).json({ message: "Comment text is required", success: false });
     }
 
     // Create a new Comment document in the database
