@@ -62,6 +62,8 @@ export const login = async (req, res) => {
       });
     }
 
+    const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {expiresIn: "10d",});
+    
     user = {
       _id: user._id,
       username: user.username,
@@ -72,10 +74,7 @@ export const login = async (req, res) => {
       following: user.following,
       post: user.posts,
     };
-
-    const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
-      expiresIn: "10d",
-    });
+    
     return res
       .cookie("token", token, {
         httpOnly: true,
