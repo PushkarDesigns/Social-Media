@@ -5,7 +5,7 @@ import isAuthenticated from "../middlewares/isAuthentication.js";
 // Import a middleware function (likely Multer) used to handle file uploads, such as images for posts
 import upload from "../middlewares/multer.js";
 // Import specific controller functions that contain the application logic for different actions
-import { addComment, addNewPost, bookmarkPost, deletePost, dislikePost, getAllPost, getCommentsOfPost, getUserPost } from "../controllers/post.controller.js";
+import { addComment, addNewPost, bookmarkPost, deletePost, likePost, dislikePost, getAllPost, getCommentsOfPost, getUserPost } from "../controllers/post.controller.js";
 
 // Initialize a new router instance provided by Express to define application routes
 const router = express.Router();

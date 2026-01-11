@@ -1,8 +1,8 @@
 // Import the sharp library for image processing
-import sharp from "sharp";
+import sharp from "sharp";implement complete post CRUD with likes, comments, and image handling...
 import cloudinary from "../utils/cloudinary.js";
-import { Post } from "../models/post.model.js";
-import { User } from "../models/user.model.js";
+import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
 
 // Define an asynchronous function to handle a new post request (typical in)
