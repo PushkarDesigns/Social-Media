@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getDatauri from "../utils/dataUri.js";
 import cloudinary from "../utils/cloudinary.js";
+import Post from "../models/post.model.js";
 
 // user register / singhup
 export const register = async (req, res) => {
@@ -62,8 +63,18 @@ export const login = async (req, res) => {
       });
     }
 
-    const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {expiresIn: "10d",});
-    
+    const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: "10d", });
+    // populate each post if in the posts array
+    const populatedPosts = await Promise.all(
+      user.posts.map(async (postId) => {
+        const post = await Post.findById(postId);
+        if (post.author.equals(user._id)) {
+          return post;
+        }
+        return null;
+      })
+    );
+
     user = {
       _id: user._id,
       username: user.username,
@@ -72,9 +83,9 @@ export const login = async (req, res) => {
       bio: user.bio,
       followers: user.followers,
       following: user.following,
-      post: user.posts,
+      post: populatedPosts,
     };
-    
+
     return res
       .cookie("token", token, {
         httpOnly: true,
@@ -255,7 +266,7 @@ export const followOrUnfollow = async (req, res) => {
       // e.g., await User.updateOne({ _id: jiskoFollowKrunga }, { $pull: { followers: followKrneWala } });
       await User.updateOne({ _id: followKrneWala }, { $pull: { following: jiskoFollowKrunga } });
       await User.updateOne({ _id: jiskoFollowKrunga }, { $pull: { followers: followKrneWala } });
-      return res.status(200).json({message:'Unfollow successfully', success:true});
+      return res.status(200).json({ message: 'Unfollow successfully', success: true });
     } else {
       // Follow logic:
       // Use Promise.all to ensure both database updates happen concurrently and efficiently.
@@ -271,7 +282,7 @@ export const followOrUnfollow = async (req, res) => {
           { $push: { followers: followKrneWala } }
         ),
       ]);
-      return res.status(200).json({message:'followed successfully', success:true});
+      return res.status(200).json({ message: 'followed successfully', success: true });
     }
 
     // In a real application, you would send a success response here after the logic is complete.
