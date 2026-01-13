@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Label } from './ui/label'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
+import axios from 'axios'
+import { toast } from 'sonner'
 
 const SignUp = () => {
     const [input, setInput] = useState({
@@ -16,9 +18,18 @@ const SignUp = () => {
         e.preventDefault();
         console.log(input);
         try {
-            const res = await 
+            const res = await axios.post('http://localhost:3000/api/v1/user/register',input,{
+               headers:{
+                'Content-Type':'application/json'
+               },
+               withCredentials:true
+            });
+            if(res.data.success){
+                toast.success(res.data.message)
+            }
         } catch (error) {
-            
+            console.log(error);
+            toast.error(error.res.data.message)
         }
     }
     return (
