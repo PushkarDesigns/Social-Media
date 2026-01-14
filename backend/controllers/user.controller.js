@@ -17,8 +17,8 @@ export const register = async (req, res) => {
     }
     const user = await User.findOne({ email });
     if (user) {
-      return res.status(401).json({
-        message: "Try different email",
+      return res.status(409).json({
+        message: "User already exists",
         success: false,
       });
     }
@@ -33,7 +33,11 @@ export const register = async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error during signup",
+      success: false
+    });
   }
 };
 
