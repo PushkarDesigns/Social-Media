@@ -11,12 +11,13 @@ const SignUp = () => {
         email:'',
         password:''
     })
+    const [loading, setLoading] = useState(false);
     const changeEventHandler = (e) =>{
         setInput({...input,[e.target.name]:e.target.value})
     }
     const signUpHandler = async (e) => {
     e.preventDefault();
-
+    setLoading(true)
     try {
         const res = await axios.post(
             'http://localhost:3000/api/v1/user/register',
@@ -28,16 +29,22 @@ const SignUp = () => {
                 withCredentials: true
             }
         );
-
         console.log(res.data);
-
         if (res.data.success) {
             toast.success(res.data.message);
+            setInput({
+                username:'',
+                email:'',
+                password:''
+            })
         }
     } catch (error) {
         console.log(error.response);
         toast.error(error.response?.data?.message || "Signup failed");
-    }};
+    } finally{
+        setLoading(false)
+    }
+};
 
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
