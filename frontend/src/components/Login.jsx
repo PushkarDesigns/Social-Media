@@ -4,45 +4,49 @@ import { Input } from './ui/input'
 import { Button } from './ui/button'
 import axios from 'axios'
 import { toast } from 'sonner'
+import { Link, useNavigate } from 'react-router-dom'
+import { Loader2 } from 'lucide-react'
 
 const Login = () => {
     const [input, setInput] = useState({
-        email:'',
-        password:''
+        email: '',
+        password: ''
     })
     const [loading, setLoading] = useState(false);
-    const changeEventHandler = (e) =>{
-        setInput({...input,[e.target.name]:e.target.value})
+    const navigate = useNavigate();
+    const changeEventHandler = (e) => {
+        setInput({ ...input, [e.target.name]: e.target.value })
     }
     const signUpHandler = async (e) => {
-    e.preventDefault();
-    setLoading(true)
-    try {
-        const res = await axios.post(
-            'http://localhost:3000/api/v1/user/login',
-            input,
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                withCredentials: true
+        e.preventDefault();
+        setLoading(true)
+        try {
+            const res = await axios.post(
+                'http://localhost:3000/api/v1/user/login',
+                input,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    withCredentials: true
+                }
+            );
+            console.log(res.data);
+            if (res.data.success) {
+                navigate('/');
+                toast.success(res.data.message);
+                setInput({
+                    email: '',
+                    password: ''
+                })
             }
-        );
-        console.log(res.data);
-        if (res.data.success) {
-            toast.success(res.data.message);
-            setInput({
-                email:'',
-                password:''
-            })
+        } catch (error) {
+            console.log(error.response);
+            toast.error(error.response?.data?.message || "Login failed");
+        } finally {
+            setLoading(false)
         }
-    } catch (error) {
-        console.log(error.response);
-        toast.error(error.response?.data?.message || "Login failed");
-    } finally{
-        setLoading(false)
-    }
-};
+    };
 
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
@@ -71,7 +75,12 @@ const Login = () => {
                         className="focus-visible:ring-transparent my-2"
                     />
                 </div>
-                <Button type='submit'>Login</Button>
+                {
+                    loading ? (
+                        <Button><Loader2 className='mr-2 h-4 w-4 animate-spin' />Please wait</Button>) : (
+                        <Button type='submit'>Login</Button>)
+                }
+                <span className="text-center">Don't have an account? Sign up<Link to='/signup' className='text-blue-600'>Sign up</Link></span>
             </form>
 
         </div>
