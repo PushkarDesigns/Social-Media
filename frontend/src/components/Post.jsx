@@ -1,6 +1,6 @@
 import React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Dialog,DialogTrigger } from './ui/dialog'
+import { Dialog, DialogTrigger } from './ui/dialog'
 import { MoreHorizontal } from 'lucide-react'
 import { Button } from './ui/button'
 
@@ -14,6 +14,14 @@ const Post = () => {
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <h1>username</h1>
+          <Dialog>
+            <DialogTrigger asChild>
+              <MoreHorizontal className="cursor-pointer" />
+            </DialogTrigger>
+            <DialogContent>
+              <Button variant="ghost" className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
