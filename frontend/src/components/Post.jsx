@@ -18,8 +18,10 @@ const Post = () => {
             <DialogTrigger asChild>
               <MoreHorizontal className="cursor-pointer" />
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className='flex flex-col items-center text-sm text-center'>
               <Button variant="ghost" className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
+              <Button variant="ghost" className="cursor-pointer w-fit">Add to favorites</Button>
+              <Button variant="ghost" className="cursor-pointer w-fit text-[#ED4956] font-bold">Cancel</Button>
             </DialogContent>
           </Dialog>
         </div>
