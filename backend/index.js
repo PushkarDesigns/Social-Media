@@ -2,7 +2,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import connectDB from "./utils/db.js";
+// import connectDB from "./utils/db.js";
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
@@ -39,5 +39,5 @@ app.use("/api/v1/message", messageRoute);
 
 app.listen(PORT, () => {
   console.log(`Server listen at port ${PORT}`);
-  connectDB();
+  // connectDB();
 });
