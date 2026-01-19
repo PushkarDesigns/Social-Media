@@ -36,76 +36,88 @@
 // export default LeftSidebar;
 
 import {
-  Heart, Home, LogOut, MessageCircle, PlusSquare, Search, Sidebar, TrendingUp,
+  Heart,
+  Home,
+  LogOut,
+  MessageCircle,
+  PlusSquare,
+  Search,
+  TrendingUp,
 } from "lucide-react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import axios from "axios";
 import { toast } from "sonner";
-
-/* Avatar icon as a component */
-const AvatarIcon = () => {
-  return (
-    <Avatar className='w-6 h-6'>
-      <AvatarImage src="https://github.com/shadcn.png" />
-      <AvatarFallback>CN</AvatarFallback>
-    </Avatar>
-  );
-};
-
-/* Sidebar items */
-const sidebarItems = [
-  { icon: Home, text: "Home" },
-  { icon: Search, text: "Search" },
-  { icon: TrendingUp, text: "Explore" },
-  { icon: MessageCircle, text: "Messages" },
-  { icon: Heart, text: "Notifications" },
-  { icon: PlusSquare, text: "Create" },
-  { icon: AvatarIcon, text: "Profile" },
-  { icon: LogOut, text: "Logout" },
-];
+import { useSelector } from "react-redux";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
+  const { user } = useSelector(state => state.auth);
+
   const logoutHandler = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/v1/user/logout', { withCredentials: true });
+      const res = await axios.get(
+        "http://localhost:3000/api/v1/user/logout",
+        { withCredentials: true }
+      );
       if (res.data.success) {
-        navigate("/login");
         toast.success(res.data.message);
+        navigate("/login");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message || "Logout failed");
     }
-  }
-  const sidebarHandler = (textType) => {
-    // alert(textType); 
-    if(textType === 'Logout') logoutHandler();
-
   };
 
+  const sidebarHandler = (textType) => {
+    if (textType === "Logout") logoutHandler();
+    if (textType === "Profile") navigate(`/profile/${user?._id}`);
+    if (textType === "Home") navigate("/");
+  };
+
+  const AvatarIcon = () => (
+    <Avatar className="w-6 h-6">
+      <AvatarImage src={user?.uploadImage} />
+      <AvatarFallback>CN</AvatarFallback>
+    </Avatar>
+  );
+
+  const sidebarItems = [
+    { icon: Home, text: "Home" },
+    { icon: Search, text: "Search" },
+    { icon: TrendingUp, text: "Explore" },
+    { icon: MessageCircle, text: "Messages" },
+    { icon: Heart, text: "Notifications" },
+    { icon: PlusSquare, text: "Create" },
+    { icon: AvatarIcon, text: "Profile" },
+    { icon: LogOut, text: "Logout" },
+  ];
+
   return (
-    <div className='fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen'>
-      <div className='flex flex-col'>
-        <h1>LOGO</h1>
+    <div className="fixed top-0 left-0 z-10 px-4 border-r border-gray-300 w-[16%] h-screen">
+      <div className="flex flex-col">
+        <h1 className="text-xl font-bold my-4">LOGO</h1>
+
         <div>
           {sidebarItems.map((item, index) => {
             const Icon = item.icon;
             return (
               <div
                 key={index}
-                className='flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer p-2 rounded' onClick={() => sidebarHandler(item.text)}>
+                onClick={() => sidebarHandler(item.text)}
+                className="flex items-center gap-3 hover:bg-gray-100 cursor-pointer p-2 rounded"
+              >
                 <Icon />
                 <span>{item.text}</span>
               </div>
             );
           })}
         </div>
-
       </div>
     </div>
   );
 };
 
 export default LeftSidebar;
+
