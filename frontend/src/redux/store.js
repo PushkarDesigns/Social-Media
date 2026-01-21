@@ -22,9 +22,7 @@ const rootReducer = combineReducers({
   auth: authSlice,
 })
 
-
 const persistedReducer = persistReducer(persistConfig, rootReducer)
-
 
 const store = configureStore({
     reducer: persistedReducer,
