@@ -6,7 +6,7 @@ import { Bookmark, MessageCircle, MoreHorizontal, Send } from 'lucide-react'
 import { Button } from './ui/button'
 import CommentDialog from './CommentDialog'
 
-const Post = () => {
+const Post = ({post}) => {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
   const changeEventHandler = (e) => {
@@ -24,10 +24,10 @@ const Post = () => {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Avatar>
-            <AvatarImage src="" alt="post_image" />
+            <AvatarImage src={post.author?.profileImage} alt="post_image" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <h1 className="text-sm font-medium">username</h1>
+          <h1 className="text-sm font-medium">{post.author?.username}</h1>
         </div>
 
         <Dialog>
@@ -49,7 +49,7 @@ const Post = () => {
       {/* Image */}
       <img
         className="rounded-sm w-full aspect-square object-cover"
-        src="https://images.unsplash.com/photo-1767992225666-e483dcfba7a4?q=80&w=419&auto=format&fit=crop"
+        src={post.image}
         alt="post_img"
       />
 
@@ -64,12 +64,12 @@ const Post = () => {
       </div>
 
       {/* Likes */}
-      <span className="font-medium block mb-1">1k likes</span>
+      <span className="font-medium block mb-1">{post.likes.length} likes</span>
 
       {/* Caption */}
       <p className="text-sm mb-1">
-        <span className="font-medium mr-2">username</span>
-        caption
+        <span className="font-medium mr-2">{post.author?.username}</span>
+        {post.caption}
       </p>
 
       {/* Comments */}

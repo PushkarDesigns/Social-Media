@@ -78,7 +78,7 @@ export const getAllPost = async (req, res) => {
     const posts = await Post.find()
       .sort({ createdAt: -1 })
       // Populate the 'author' field, replacing the ID with the user document, selecting only 'username' and 'uploadImage' fields
-      .populate({ path: "author", select: "username, uploadImage" })
+      .populate({ path: "author", select: "username uploadImage" })
       // Populate the 'comments' array
       .populate({
         path: "comments",
@@ -115,7 +115,7 @@ export const getUserPost = async (req, res) => {
       // Populate the 'author' field with data from the User collection
       .populate({
         path: "author",
-        select: "username, uploadImage", // Select only specific fields for the author
+        select: "username uploadImage", // Select only specific fields for the author
       })
       // Populate the 'comments' array within each post
       .populate({
