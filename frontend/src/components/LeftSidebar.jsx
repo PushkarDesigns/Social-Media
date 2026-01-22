@@ -45,15 +45,19 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import axios from "axios";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser } from "@/redux/authSlice";
+import CreatePost from "./CreatePost";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
   const { user } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false)
 
   const logoutHandler = async () => {
     try {
@@ -62,6 +66,7 @@ const LeftSidebar = () => {
         { withCredentials: true }
       );
       if (res.data.success) {
+        dispatch(setAuthUser(null));
         toast.success(res.data.message);
         navigate("/login");
       }
@@ -69,9 +74,14 @@ const LeftSidebar = () => {
       toast.error(error?.response?.data?.message || "Logout failed");
     }
   };
-
+  
   const sidebarHandler = (textType) => {
-    if (textType === "Logout") logoutHandler();
+    if (textType === "Logout") {
+      logoutHandler();
+    }
+    else if (textType === 'Create'){
+      setOpen(true);
+    }
     if (textType === "Profile") navigate(`/profile/${user?._id}`);
     if (textType === "Home") navigate("/");
   };
@@ -115,6 +125,7 @@ const LeftSidebar = () => {
           })}
         </div>
       </div>
+      <CreatePost open={open} setOpen={setOpen}/>
     </div>
   );
 };
