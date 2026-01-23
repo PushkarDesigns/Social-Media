@@ -108,15 +108,19 @@
 import React, { useRef, useState } from "react";
 
 // Import UI components
-import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader } from "./ui/dialog.jsx";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar.jsx";
+import { Textarea } from "./ui/textarea.jsx";
+import { Button } from "./ui/button.jsx";
 
-import { readFileAsDataURL } from "@/lib/utils";
+import { readFileAsDataURL } from "@/lib/utils.js";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setPosts } from "@/redux/postSlice.js";
+// import Posts from "./Posts";
+
 
 const CreatePost = ({ open, setOpen }) => {
   const imageRef = useRef(null);
@@ -125,6 +129,9 @@ const CreatePost = ({ open, setOpen }) => {
   const [caption, setCaption] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [loading, setLoading] = useState(false);
+  const {user} = useSelector(store=>store.auth);
+  const { posts } = useSelector(store=>store.post)
+  const dispatch = useDispatch();
 
   // Handle image selection
   const fileChangeHandler = async (e) => {
@@ -159,6 +166,7 @@ const CreatePost = ({ open, setOpen }) => {
       );
 
       if (res.data.success) {
+        dispatch(setPosts([...posts, res.data.post]))
         toast.success(res.data.message);
 
         // Reset state
@@ -184,11 +192,11 @@ const CreatePost = ({ open, setOpen }) => {
         {/* User Info */}
         <div className="flex gap-3 items-center">
           <Avatar>
-            <AvatarImage src="" alt="profile" />
+            <AvatarImage src={user?.uploadImage} alt="profile" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-semibold text-xs">Username</p>
+            <p className="font-semibold text-xs">{user?.username}</p>
             <span className="text-xs text-gray-500">Bio here...</span>
           </div>
         </div>
