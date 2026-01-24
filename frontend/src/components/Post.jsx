@@ -5,10 +5,13 @@ import { Dialog, DialogTrigger, DialogContent } from './ui/dialog'
 import { Bookmark, MessageCircle, MoreHorizontal, Send } from 'lucide-react'
 import { Button } from './ui/button'
 import CommentDialog from './CommentDialog'
+import { useSelector } from 'react-redux'
+import store from '@/redux/store'
 
 const Post = ({post}) => {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
+  const {user} = useSelector(store=>store.auth)
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {
