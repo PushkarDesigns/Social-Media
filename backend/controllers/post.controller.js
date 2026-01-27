@@ -87,7 +87,7 @@ export const getAllPost = async (req, res) => {
         // Nested population: for each comment, populate its 'author' field
         populate: {
           path: "author",
-          select: "username, uploadImage", // Select specific author fields
+          select: "username uploadImage", // Select specific author fields
         },
       });
 
@@ -123,7 +123,7 @@ export const getUserPost = async (req, res) => {
         sort: { createdAt: -1 }, // Sort comments by creation date (newest first)
         populate: {
           path: "author", // Populate the 'author' field within each comment
-          select: "username, uploadImage", // Select specific fields for the comment author
+          select: "username uploadImage", // Select specific fields for the comment author
         },
       });
 
@@ -236,11 +236,11 @@ export const addComment = async (req, res) => {
       text, // Assign the comment text
       author: commentKrneWalaUserKiId, // Assign the author's ID
       post: postId, // Assign the associated post's ID
-    })
+    });
       // Populate the 'author' field immediately after creation to return relevant user details in the response
-      .populate({
+      await comment.populate({
         path: "author",
-        select: "username, uploadImage", // Select specific fields from the User model
+        select: "username uploadImage", // Select specific fields from the User model
       });
 
     // Find the associated post document

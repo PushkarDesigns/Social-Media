@@ -77,6 +77,7 @@ const Post = ({ post }) => {
 
         dispatch(setPosts(updatedPostData));
         toast.success(res.data.message);
+        setText("");
       }
     } catch (error) {
       console.log(error);
