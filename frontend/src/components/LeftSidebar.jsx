@@ -52,6 +52,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
 import CreatePost from "./CreatePost";
+import { setPosts, setSelectedPost } from "@/redux/postSlice";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
@@ -68,6 +69,8 @@ const LeftSidebar = () => {
       if (res.data.success) {
         dispatch(setAuthUser(null));
         toast.success(res.data.message);
+        dispatch(setSelectedPost(null));
+        dispatch(setPosts([]));          
         navigate("/login");
       }
     } catch (error) {

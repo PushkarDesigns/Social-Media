@@ -8,7 +8,8 @@ import CommentDialog from './CommentDialog'
 import { useDispatch, useSelector } from 'react-redux'
 import axios from 'axios'
 import { toast } from 'sonner'
-import { setPosts } from '@/redux/postSlice.js'
+import { setPosts, setSelectedPost } from '@/redux/postSlice.js'
+import { Badge } from './ui/badge'
 
 const Post = ({ post }) => {
   const [text, setText] = useState("");
@@ -62,9 +63,9 @@ const Post = ({ post }) => {
         withCredentials: true
       });
       console.log(res.data);
-      
+
       if (res.data.success) {
-        const updatedCommentData = [...comment, res.data.message];
+        const updatedCommentData = [...comment, res.data.comment];
         setComment(updatedCommentData);
 
         const updatedPostData = posts.map(spc =>
@@ -110,7 +111,11 @@ const Post = ({ post }) => {
             <AvatarImage src={post.author?.profileImage} alt="post_image" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <h1 className="text-sm font-medium">{post.author?.username}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-sm font-medium">{post.author?.username}</h1>
+            {user?._id === post.author._id &&
+              <Badge variant="secondary">Author</Badge>}
+          </div>
         </div>
 
         <Dialog>
@@ -142,7 +147,10 @@ const Post = ({ post }) => {
           {
             liked ? <FaRegHeart onClick={likeOrDisLikeHandler} size={'24'} className="cursor-pointer text-red-600" /> : <FaRegHeart onClick={likeOrDisLikeHandler} size={'22px'} className="cursor-pointer hover:text-gray-600" />
           }
-          <MessageCircle onClick={() => setOpen(true)} className="cursor-pointer hover:text-gray-600" />
+          <MessageCircle onClick={() => {
+            dispatch(setSelectedPost(post))
+            setOpen(true);
+          }} className="cursor-pointer hover:text-gray-600" />
           <Send className="cursor-pointer hover:text-gray-600" />
         </div>
         <Bookmark className="cursor-pointer hover:text-gray-600" />
@@ -157,10 +165,14 @@ const Post = ({ post }) => {
         {post.caption}
       </p>
 
-      {/* Comments */}
-      <span onClick={() => setOpen(true)} className="text-sm text-gray-500 block mb-2 cursor-pointer">
-        View all {comment.length} comments
-      </span>
+      {
+        comment.length > 0 && (
+          <span onClick={() => {
+            dispatch(setSelectedPost(post))
+            setOpen(true);
+          }} className="text-sm text-gray-500 block mb-2 cursor-pointer">View all {comment.length} comments</span>)
+      }
+
       <CommentDialog open={open} setOpen={setOpen} />
 
       {/* Add comment */}
@@ -174,7 +186,7 @@ const Post = ({ post }) => {
         </button>}
       </div>
 
-    </div>
+    </div >
   )
 }
 
