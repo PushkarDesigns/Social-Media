@@ -35,42 +35,42 @@ const EditProfile = () => {
 
     const editProfileHandler = async () => {
         console.log(input);
-        // const formData = new FormData();
-        // formData.append("bio", input.bio);
-        // formData.append("gender", input.gender);
+        const formData = new FormData();
+        formData.append("bio", input.bio);
+        formData.append("gender", input.gender);
 
-        // if (input.profilePhoto) {
-        //     formData.append("profilePhoto", input.profilePhoto);
-        // }
+        if (input.profilePhoto) {
+            formData.append("profilePhoto", input.profilePhoto);
+        }
 
-        // try {
-        //     setLoading(true);
-        //     const res = await axios.post('http://localhost:3000/api/v1/user/profile/edit', formData, {
-        //         headers: {
-        //             'Content-Type': 'multipart/form-data'
-        //         },
-        //         withCredentials: true
-        //     });
+        try {
+            setLoading(true);
+            const res = await axios.post('http://localhost:3000/api/v1/user/profile/edit', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                withCredentials: true
+            });
 
-        //     if (res.data.success) {
-        //         const updatedUserData = {
-        //             ...user,
-        //             bio: res.data.user?.bio,
-        //             profilePicture: res.data.user?.profilePicture,
-        //             gender: res.data.user.gender
-        //         };
+            if (res.data.success) {
+                const updatedUserData = {
+                    ...user,
+                    bio: res.data.user?.bio,
+                    profilePicture: res.data.user?.profilePicture,
+                    gender: res.data.user.gender
+                };
 
-        //         dispatch(setAuthUser(updatedUserData));
-        //         navigate(`/profile/${user?._id}`);
-        //         toast.success(res.data.message);
-        //     }
-        // } catch (error) {
-        //     // Handle error logic here
-        //     console.log(error);
-        //     toast.error(error.response?.data?.message || "An error occurred");
-        // } finally {
-        //     setLoading(false);
-        // }
+                dispatch(setAuthUser(updatedUserData));
+                navigate(`/profile/${user?._id}`);
+                toast.success(res.data.message);
+            }
+        } catch (error) {
+            // Handle error logic here
+            console.log(error);
+            toast.error(error.response?.data?.message || "An error occurred");
+        } finally {
+            setLoading(false);
+        }
     }
 
 
