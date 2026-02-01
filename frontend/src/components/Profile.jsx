@@ -1,20 +1,21 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/ui/avatar'
 import useGetUserProfile from '@/hooks/useGetUserProfile';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Badge } from './ui/badge';
-import { AtSign } from 'lucide-react';
+import { AtSign, Heart, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from './ui/button';
 
 const Profile = () => {
   const params = useParams();
   const userId = params.id;
   useGetUserProfile(userId);
-  const [ activeTab, setActiveTab ] = useState('posts');
+  const [activeTab, setActiveTab] = useState('posts');
 
-  const userProfile = useSelector(store => store.auth);
+  const { userProfile, user } = useSelector(store => store.auth);
   // console.log(userProfile);
-  const isLoggedInUserProfile = false;
+  const isLoggedInUserProfile = user?._id === userProfile?._id;             
   const isFollowing = false;
 
   const handlerTabChange = (tab) => {
@@ -38,7 +39,7 @@ const Profile = () => {
                 {
                   isLoggedInUserProfile ? (
                     <>
-                      <Button variant='secondary' className='hover:bg-gray-200 h-8'>Edit profile</Button>
+                      <Link to="/account/edit"><Button variant='secondary' className='hover:bg-gray-200 h-8'>Edit profile</Button></Link>
                       <Button variant='secondary' className='hover:bg-gray-200 h-8'>View archive</Button>
                       <Button variant='secondary' className='hover:bg-gray-200 h-8'>Ad tools</Button>
                     </>
@@ -71,16 +72,37 @@ const Profile = () => {
         </div>
         <div className='border-t border-t-gray-200'>
           <div className='flex items-center justify-center gap-10 text-sm'>
-            <span className={`py-3 cursor-pointer ${activeTab === 'posts' ? 'font-bold' : ''}`} onClick={()=>handlerTabChange('posts')}>
+            <span className={`py-3 cursor-pointer ${activeTab === 'posts' ? 'font-bold' : ''}`} onClick={() => handlerTabChange('posts')}>
               POSTS
             </span>
-            <span className={`py-3 cursor-pointer ${activeTab === 'saved' ? 'font-bold' : ''}`} onClick={()=>handlerTabChange('saved')}>
+            <span className={`py-3 cursor-pointer ${activeTab === 'saved' ? 'font-bold' : ''}`} onClick={() => handlerTabChange('saved')}>
               SAVED
             </span>
             <span className='py-3 cursor-pointer'>REELS</span>
             <span className='py-3 cursor-pointer'>TAGS</span>
           </div>
-          
+          <div className='grid grid-cols-3 gap-1'>
+            {displayedPost?.map((post) => {
+              return (
+                <div key={post?._id} className='inset-0 absolute cursor-pointer'>
+                  <img src={post.image} alt='postimage' className='rounded-sm my-2 w-full aspect-square object-cover' />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className='flex items-center text-white space-x-4'>
+                      <button className='flex items-center gap-2 hover:text-gray-300'>
+                        <Heart />
+                        <span>{post?.likes.length}</span>
+                      </button>
+                      <button className='flex items-center gap-2 hover:text-gray-300'>
+                        <MessageCircle />
+                        <span>{post?.comments.length}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
         </div>
       </div>
     </div>

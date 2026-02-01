@@ -70,24 +70,25 @@ const LeftSidebar = () => {
         dispatch(setAuthUser(null));
         toast.success(res.data.message);
         dispatch(setSelectedPost(null));
-        dispatch(setPosts([]));          
+        dispatch(setPosts([]));
         navigate("/login");
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Logout failed");
     }
   };
-  
+
   const sidebarHandler = (textType) => {
-    if (textType === "Logout") {
+    if (textType === 'Logout') {
       logoutHandler();
-    }
-    else if (textType === 'Create'){
+    } else if (textType === "Create") {
       setOpen(true);
+    } else if (textType === "Profile") {
+      navigate(`/profile/${user?._id}`);
+    } else if (textType === "Home") {
+      navigate("/");
     }
-    if (textType === "Profile") navigate(`/profile/${user?._id}`);
-    if (textType === "Home") navigate("/");
-  };
+  }
 
   const AvatarIcon = () => (
     <Avatar className="w-6 h-6">
@@ -128,7 +129,7 @@ const LeftSidebar = () => {
           })}
         </div>
       </div>
-      <CreatePost open={open} setOpen={setOpen}/>
+      <CreatePost open={open} setOpen={setOpen} />
     </div>
   );
 };

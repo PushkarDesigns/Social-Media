@@ -24,7 +24,7 @@ router.route("/logout").get(logout);
 // This route is protected by the 'isAuthenticated' middleware, meaning a valid token/session
 // is required before the subsequent (unseen) profile controller logic runs.
 router.route("/:id/profile").get(isAuthenticated,getProfile /* , profileControllerFunction */ );
-router.route("/profile/edit").post(isAuthenticated, upload.single('uploadImage'), editProfile /* , profileControllerFunction */ );
+router.route("/profile/edit").post(isAuthenticated, upload.single('profilePhoto'), editProfile /* , profileControllerFunction */ );
 router.route("/suggested").get(isAuthenticated, getSuggestedUsers); // isAuthenticated: This function is likely used for authentication, verifying that the user making the request is logged in before allowing them access to the route.
 // getSuggestedUsers: This is the route handler that runs if the user is authenticated, fetching and returning a list of suggested users.
 router.route('/followorunfollow/:id').post(isAuthenticated, followOrUnfollow);  // This sets up a POST endpoint at the path /followorunfollow/, which also expects a dynamic id parameter in the URL (e.g., /followorunfollow/123).
