@@ -2,6 +2,7 @@
 // These models represent collections in the MongoDB database.
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import { getReceiverSocketId } from "../socket/socket.js";
 
 // Define an asynchronous function 'sendMessage' that handles the API request and response.
 // 'req' is the request object, and 'res' is the response object.
@@ -12,13 +13,15 @@ export const sendMessage = async (req, res) => {
     // Extract the receiver's ID from the URL parameters (e.g., /send/:id)
     const receiverId = req.params.id;
     // Extract the message content from the request body (e.g., JSON data)
-    const { message } = req.body;
+    const { textMessage:message } = req.body;
+    console.log(message); // hello buddy
+    
 
     // Try to find an existing conversation document that includes both the sender and receiver IDs
     // The $all operator ensures both IDs are present in the 'participants' array
     let conversation = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] }
-    });
+    }).populate('messages');
 
     // If no existing conversation is found (it returns null)
     if (!conversation) {
@@ -45,6 +48,12 @@ export const sendMessage = async (req, res) => {
     await Promise.all([conversation.save(), newMessage.save()]);
 
     // Implement socket IO for real time data transfer (This is a comment in the original code)
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      // io.to() targets a specific socket ID to emit an event
+      io.to(receiverSocketId).emit('newMessage', newMessage);
+    }
+
 
     // Return a successful response (HTTP 201 Created) with status and the new message data
     return res.status(201).json({
@@ -81,7 +90,7 @@ export const getMessage = async (req, res) => {
 
     // If a conversation IS found:
     // Return a success status 200 OK with the array of messages associated with that conversation
-    return res.status(200).json({ success: true, messages: conversation.messages });
+    return res.status(200).json({ success: true, messages: conversation?.messages });
 
   } catch (error) {
     // If any part of the try block fails (e.g., database connection error), catch the error here

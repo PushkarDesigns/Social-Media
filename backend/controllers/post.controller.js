@@ -4,6 +4,7 @@ import cloudinary from "../utils/cloudinary.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
+import { getReceiverSocketId } from "../socket/socket.js";
 
 // Define an asynchronous function to handle a new post request (typical in)
 export const addNewPost = async (req, res) => {
@@ -166,7 +167,28 @@ export const likePost = async (req, res) => {
     await post.save();
 
     // Implement socket io for real time notification (comment from original code)
+    const user = await User.findById(likeKrneWalaUserkiId).select('username uploadImage');
 
+    // 2. Identify the original post owner
+    const postOwnerId = post.author.toString(); // Assuming 'post' variable is available here
+
+    // 3. Optional: Check if a notification is needed (e.g., if user likes their own post, might skip)
+    if (postOwnerId !== likeKrneWalaUserkiId) {
+      // It's a notification event
+      const notification = {
+        type: 'like',
+        userId: likeKrneWalaUserkiId,
+        userDetails: user,
+        postId,
+        message: 'Your post was liked'
+      };
+
+      // 4. Get the socket ID for the receiver
+      const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+
+      // 5. Emit the notification event to the specific client
+      io.to(postOwnerSocketId).emit('notification', notification);
+    }
     // Return a response to the client
     return (
       res
@@ -208,6 +230,22 @@ export const dislikePost = async (req, res) => {
     await post.save();
 
     // Implement socket io for real time notification (comment from original code)
+    // implement socket io for real time notification
+    const user = await User.findById(likeKrneWalaUserkiId).select('username profilePicture');
+    const postOwnerId = post.author.toString();
+    if (postOwnerId !== likeKrneWalaUserkiId) {
+      //emit a notification event
+      const notification = {
+        type: 'dislike',
+        userId: likeKrneWalaUserkiId,
+        userDetails: user,
+        postId,
+        message: 'Your post was Liked'
+      }
+    const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+      io.to(postOwnerSocketId).emit('notification', notification);
+    }
+
 
     // If successful, return a 200 status code and a success message as a JSON response
     return res.status(200).json({ message: "Post disliked", success: true });
@@ -237,11 +275,11 @@ export const addComment = async (req, res) => {
       author: commentKrneWalaUserKiId, // Assign the author's ID
       post: postId, // Assign the associated post's ID
     });
-      // Populate the 'author' field immediately after creation to return relevant user details in the response
-      await comment.populate({
-        path: "author",
-        select: "username uploadImage", // Select specific fields from the User model
-      });
+    // Populate the 'author' field immediately after creation to return relevant user details in the response
+    await comment.populate({
+      path: "author",
+      select: "username uploadImage", // Select specific fields from the User model
+    });
 
     // Find the associated post document
     const post = await Post.findById(postId);

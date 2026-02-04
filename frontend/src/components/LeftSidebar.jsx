@@ -87,6 +87,9 @@ const LeftSidebar = () => {
       navigate(`/profile/${user?._id}`);
     } else if (textType === "Home") {
       navigate("/");
+    }// This line is derived from the image provided by the user
+    else if (textType === 'Messages') {
+      navigate("/chat");
     }
   }
 
