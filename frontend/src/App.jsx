@@ -58,6 +58,7 @@ import { io } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
+import { setLikeNotification } from "./redux/rtnSlice";
 
 const router = createBrowserRouter([
   {
@@ -96,10 +97,10 @@ const App = () => {
       });
 
       // Listen for a custom event named 'notification' from the connected socket
-      socket.on('notification', (notification) => {
+      socketio.on('notification', (notification) => {
         // When a notification is received, dispatch an action (likely to a Redux store)
         // to update the application's state or trigger a side effect.
-        dispatch();
+        dispatch(setLikeNotification(notification));
       });
 
       // Cleanup function when component unmounts or dependencies change

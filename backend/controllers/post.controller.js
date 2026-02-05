@@ -4,7 +4,7 @@ import cloudinary from "../utils/cloudinary.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
-import { getReceiverSocketId } from "../socket/socket.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 // Define an asynchronous function to handle a new post request (typical in)
 export const addNewPost = async (req, res) => {
