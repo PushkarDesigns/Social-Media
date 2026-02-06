@@ -100,6 +100,41 @@ const Post = ({ post }) => {
     }
   }
 
+  // // Define an asynchronous arrow function called 'bookmarkHandler'
+  // const bookmarkHandler = async () => {
+  //   // Start a try block to handle any potential errors during the asynchronous operation
+  //   try {
+  //     // Use the 'await' keyword to pause execution until the axios.post() request completes
+  //     // 'axios.post()' sends an HTTP POST request to a server endpoint
+  //     // The response data from the successful request will be stored in the 'res' constant
+  //     const res = await axios.post(/* URL and optional data here */);
+  //   } catch (error) {
+  //     // If an error (e.g., network issue, server error) occurs in the 'try' block,
+  //     // catch it here and log the error details to the console for debugging
+  //     console.log(error);
+  //   }
+  // };
+
+  // Define an asynchronous arrow function called 'bookmarkHandler'
+  const bookmarkHandler = async () => {
+    // Start a try block to handle any potential errors during the asynchronous operation
+    try {
+      // Use 'await' to pause execution until the axios.get() request completes
+      // Sends an HTTP GET request to the specified endpoint with credentials included
+      const res = await axios.get(`http://localhost:8000/api/v1/post/${post?._id}/bookmark`, { withCredentials: true });
+
+      // Check if the server response indicates success
+      if (res.data.success) {
+        // Display a success notification (using a library like 'react-hot-toast' or similar)
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      // If an error (e.g., network issue, server error) occurs in the 'try' block,
+      // catch it here and log the error details to the console for debugging
+      console.log(error);
+    }
+  };
+
 
   return (
     <div className="my-8 w-full max-w-sm mx-auto">
@@ -123,9 +158,9 @@ const Post = ({ post }) => {
             <MoreHorizontal className="cursor-pointer" />
           </DialogTrigger>
           <DialogContent className="flex flex-col items-center text-sm text-center">
-            <Button variant="ghost" className="text-[#ED4956] font-bold">
+            {post?.author?._id !== user?._id && <Button variant="ghost" className="text-[#ED4956] font-bold">
               Unfollow
-            </Button>
+            </Button>}
             <Button variant="ghost">Add to favorites</Button>
             {
               user && user?._id === post?.author._id && <Button onClick={deletePostHandler} variant="ghost" className="text-[#ED4956] font-bold">Delete</Button>
@@ -153,7 +188,7 @@ const Post = ({ post }) => {
           }} className="cursor-pointer hover:text-gray-600" />
           <Send className="cursor-pointer hover:text-gray-600" />
         </div>
-        <Bookmark className="cursor-pointer hover:text-gray-600" />
+        <Bookmark onClick={bookmarkHandler} className="cursor-pointer hover:text-gray-600" />
       </div>
 
       {/* Likes */}

@@ -28,6 +28,8 @@ router.route("/:id/comment/all").post(isAuthenticated, getCommentsOfPost);
 // Route to delete a specific post: requires authentication, then calls deletePost
 router.route("/delete/:id").delete(isAuthenticated, deletePost);
 // Route to bookmark a post: requires authentication, then calls bookmarkPost
-router.route("/:id/bookmark").post(isAuthenticated, bookmarkPost);
+// router.route("/:id/bookmark").post(isAuthenticated, bookmarkPost);
+// // Export the configured router so it can be used in the main application file (e.g., index.js or app.js)
+router.route("/:id/bookmark").get(isAuthenticated, bookmarkPost);
 // Export the configured router so it can be used in the main application file (e.g., index.js or app.js)
 export default router;

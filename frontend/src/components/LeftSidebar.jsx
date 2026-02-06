@@ -137,7 +137,7 @@ const LeftSidebar = () => {
                     <Popover>
                       <PopoverTrigger asChild>
                         {/* Trigger button for the popover, styled as a small icon badge */}
-                        <Button size="icon" className="rounded-full h-5 w-5 absolute bottom-6 left-6">
+                        <Button size="icon" className="rounded-full h-5 w-5 bg-red-600 hover:bg-red-600 absolute bottom-6 left-6">
                           {likeNotification.length}
                         </Button>
                       </PopoverTrigger>
@@ -149,7 +149,7 @@ const LeftSidebar = () => {
                             <p>No new notification</p>
                           ) : (
                             likeNotification.map((notification) => (
-                              <div key={notification.userId} className="flex items-center gap-2">
+                              <div key={notification.userId} className="flex items-center gap-2 my-2">
                                 {/* Additional notification details would go here */}
                                 <div className="flex items-center gap-3 p-3 border-b">
                                   <Avatar>
