@@ -1,5 +1,5 @@
 // Import necessary functions and libraries for a React/Redux setup
-import { setMessages } from "/redux/chatSlice"; // Action to store chat messages
+import { setMessages } from "../redux/chatSlice.js"; // Action to store chat messages
 // import { setPosts } from "/redux/postsSlice";   // Action to store posts
 import axios from "axios";                      // HTTP client for API requests
 import { useEffect } from "react";              // Hook for handling side effects

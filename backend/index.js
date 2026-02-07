@@ -6,12 +6,17 @@ import cookieParser from "cookie-parser";
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
-import { app, Server } from "./socket/socket.js"; 
+// import { app, Server } from "./socket/socket.js";
+import { server } from "./socket/socket.js";
+import path from 'path';
 
 import dotenv from "dotenv";
 dotenv.config({});
 
 const PORT = process.env.PORT || 8000;
+
+const __dirname = path.resolve();
+console.log(__dirname);
 
 const app = express();
 
@@ -39,7 +44,18 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
 
-Server.listen(PORT, () => {
+app.use(express.static(path.join(__dirname, "/fronted/dist")));
+// This route handler serves the main frontend entry point for any 
+// request that doesn't match a defined API route. 
+// It is essential for single-page applications (SPAs) like React or Vue 
+// to ensure the client-side router handles the navigation.
+
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+});
+
+
+server.listen(PORT, () => {
   console.log(`Server listen at port ${PORT}`);
   // connectDB();
 });

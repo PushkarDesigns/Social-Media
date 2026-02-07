@@ -1,5 +1,5 @@
 // Import the action creator 'setPosts' from the Redux post slice definition
-import { setUserProfile } from "@/redux/authSlice";
+import { setUserProfile } from "../redux/authSlice.js";
 import { setPosts } from "@/redux/postSlice";
 // Import the Axios library for making HTTP requests
 import axios from "axios";

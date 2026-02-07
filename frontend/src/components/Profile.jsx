@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/ui/avatar'
-import useGetUserProfile from '@/hooks/useGetUserProfile';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
+import useGetUserProfile from '../hooks/userGetUserProfile.jsx';
 import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Badge } from './ui/badge';

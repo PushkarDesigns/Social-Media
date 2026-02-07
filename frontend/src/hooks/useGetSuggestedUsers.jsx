@@ -1,5 +1,5 @@
 // Import the action creator 'setPosts' from the Redux post slice definition
-import { setPosts } from "@/redux/postSlice";
+import { setPosts } from "../redux/postSlice.js";
 // Import the Axios library for making HTTP requests
 import axios from "axios";
 // Import the useEffect hook from React for side effects
