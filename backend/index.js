@@ -44,13 +44,13 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
 
-app.use(express.static(path.join(__dirname, "/fronted/dist")));
+app.use(express.static(path.join(__dirname, "/frontend/dist")));
 // This route handler serves the main frontend entry point for any 
 // request that doesn't match a defined API route. 
 // It is essential for single-page applications (SPAs) like React or Vue 
 // to ensure the client-side router handles the navigation.
 
-app.get("*", (req, res) => {
+app.get("*", (_, res) => {
   res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 });
 
