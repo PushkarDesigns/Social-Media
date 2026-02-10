@@ -48,7 +48,7 @@
 import React, { useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./components/Login";
-import SignUp from "./components/Signup";
+import SignUp from "./components/SignUp";
 import MainLayout from "./components/MainLayout";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
