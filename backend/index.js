@@ -6,7 +6,7 @@ import connectDB from "./utils/db.js";
 import userRoute from "./routes/user.route.js";
 import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
-// import { app, Server } from "./socket/socket.js";
+import { app, Server } from "./socket/socket.js";
 import { server } from "./socket/socket.js";
 import path from 'path';
 
@@ -32,7 +32,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: process.env.URL,
   credentials: true,
 };
 
@@ -44,7 +44,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
 
-app.use(express.static(path.join(__dirname, "/frontend/dist")));
+// app.use(express.static(path.join(__dirname, "/frontend/dist")));
 // This route handler serves the main frontend entry point for any 
 // request that doesn't match a defined API route. 
 // It is essential for single-page applications (SPAs) like React or Vue 
