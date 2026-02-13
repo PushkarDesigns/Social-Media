@@ -16,9 +16,10 @@ const Post = ({ post }) => {
   const [open, setOpen] = useState(false);
   const { user } = useSelector(store => store.auth);
   const { posts } = useSelector(store => store.post);
-  const [liked, setLiked] = useState(post.likes.includes(user?._id || false));
-  const [postLike, setPostLike] = useState(post.likes.length);
-  const [comment, setComment] = useState(post.comments);
+  const [liked, setLiked] = useState(post?.likes?.includes(user?._id) || false);
+  const [postLike, setPostLike] = useState(post?.likes?.length || 0);
+  const [comment, setComment] = useState(post?.comments || []);
+
   const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
@@ -143,13 +144,17 @@ const Post = ({ post }) => {
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Avatar>
-            <AvatarImage src={post.author?.profileImage} alt="post_image" />
+            {/* <AvatarImage src={post.author?.profileImage} alt="post_image" /> */}
+            <AvatarImage src={post?.author?.profileUpload} alt="post_image" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="flex items-center gap-3">
-            <h1 className="text-sm font-medium">{post.author?.username}</h1>
-            {user?._id === post.author._id &&
-              <Badge variant="secondary">Author</Badge>}
+            {/* <h1 className="text-sm font-medium">{post?.author?.username}</h1> */}
+            <h1 className="text-sm font-medium">{post?.author?.username}</h1>
+            {/* {user?._id === post.author._id &&
+              <Badge variant="secondary">Author</Badge>
+            } */}
+            {user?._id === post?.author?._id && <Badge variant="secondary">Author</Badge>}
           </div>
         </div>
 
@@ -226,3 +231,4 @@ const Post = ({ post }) => {
 }
 
 export default Post
+
