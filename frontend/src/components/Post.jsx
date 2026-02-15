@@ -275,11 +275,11 @@ const Post = ({ post }) => {
         const updatedPosts = posts.map((p) =>
           p._id === post._id
             ? {
-                ...p,
-                likes: liked
-                  ? p.likes.filter((id) => id !== user._id)
-                  : [...p.likes, user._id],
-              }
+              ...p,
+              likes: liked
+                ? p.likes.filter((id) => id !== user._id)
+                : [...p.likes, user._id],
+            }
             : p
         );
 
@@ -381,7 +381,11 @@ const Post = ({ post }) => {
       </div>
 
       {/* IMAGE */}
-      <img src={post.image} className="w-full rounded" />
+      <img
+        src={post?.image || "https://via.placeholder.com/400"}
+        className="w-full rounded"
+      />
+
 
       {/* ACTIONS */}
       <div className="flex justify-between my-2">
@@ -411,7 +415,7 @@ const Post = ({ post }) => {
 
       {/* CAPTION */}
       <p>
-        <b>{post?.author?.username}</b> {post.caption}
+        <b>{post?.author?.username}</b> {post?.caption}
       </p>
 
       {/* COMMENTS */}
