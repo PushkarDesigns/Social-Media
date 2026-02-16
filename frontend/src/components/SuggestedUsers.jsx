@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 const SuggestedUsers = () => {
   const { suggestedUsers } = useSelector(store => store.auth);
+
   return (
     <div className='my-10'>
       <div className='flex items-center justify-between text-sm'>
@@ -13,7 +14,7 @@ const SuggestedUsers = () => {
       </div>
 
       {
-        suggestedUsers.map((user) => {
+        (suggestedUsers || []).map((user) => {
           return (
             <div key={user._id} className='flex items-center justify-between my-5'>
               <div className='flex items-center gap-2'>
