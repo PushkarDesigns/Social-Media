@@ -2,7 +2,7 @@
 import sharp from "sharp";
 import cloudinary from "../utils/cloudinary.js";
 import Post from "../models/post.model.js";
-import user from "../models/user.model.js";
+import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
 
@@ -44,7 +44,7 @@ export const addNewPost = async (req, res) => {
     });
 
     // Find a user document in the database using their unique 'authorId'
-    const user = await user.findById(authorId);
+    const user = await User.findById(authorId);
     // Check if the user was successfully found
     if (user) {
       // If found, add the ID of the new post to the user's list of posts
@@ -278,7 +278,7 @@ export const addComment = async (req, res) => {
     // Populate the 'author' field immediately after creation to return relevant user details in the response
     await comment.populate({
       path: "author",
-      select: "username uploadImage", // Select specific fields from the User model
+      select: "username profilePicture", // Select specific fields from the User model
     });
 
     // Find the associated post document
